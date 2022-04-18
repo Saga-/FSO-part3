@@ -57,12 +57,18 @@ app.delete('/api/persons/:id', (request, response) => {
 });
 
 app.post('/api/persons', (request, response) => {
+  const handleError = msg => response.status(400).json({ error: msg })
+
   console.log(request.body);
   const body = request.body
-  if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: 'content missing'
-    })
+  if (!body.name) {
+    handleError('name missing in request');
+  }
+  if (!body.number) {
+    handleError('number missing in request');
+  }
+  if (persons.find(person => person.name === body.name)) {
+    handleError('name must be unique');
   }
 
   const id = Math.floor((Math.random() * 5000) + 1);
@@ -74,7 +80,6 @@ app.post('/api/persons', (request, response) => {
   persons = persons.concat(person);
   response.json(person);
 });
-
 
 app.get('/info', (request, response) => {
   const size = persons.length;

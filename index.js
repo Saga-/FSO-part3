@@ -38,6 +38,14 @@ app.get('/api/persons', (request, response) => {
   response.json(persons)
 });
 
+app.get('/info', (request, response) => {
+  const size = persons.length;
+  response.send(`
+    <p>Phonebook has info for ${size} people</p>
+    <p>${Date()}</p>
+  `)
+})
+
 
 
 

@@ -44,6 +44,16 @@ app.get('/api/persons/:id', (request, response) => {
   person ? response.json(person) : response.status(404).send('Person not found');
 });
 
+app.delete('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id);
+  const person = persons.find(person => person.id === id);
+  if (!person) {
+    return response.status(404).end();
+  }
+  persons = persons.filter(person => person.id !== id);
+  response.status(204).end();
+});
+
 
 app.get('/info', (request, response) => {
   const size = persons.length;

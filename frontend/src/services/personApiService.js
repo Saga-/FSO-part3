@@ -22,4 +22,6 @@ const updatePerson = (id, data) => {
   return request.then(res => res.data);
 }
 
-export default { getAllPersons, addNewPerson, deletePerson, updatePerson }
+const personApiService = { getAllPersons, addNewPerson, deletePerson, updatePerson }
+
+export default personApiService

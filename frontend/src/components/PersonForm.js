@@ -11,6 +11,7 @@ export const PersonForm = ({ setNewName, setNewNumber, setPersons, newName, newN
 
 
   const handleFormSubmit = (e) => {
+    debugger;
     e.preventDefault();
     const existingPersonArr = persons.filter(person => person.name === newName);
     if (existingPersonArr.length) {
@@ -26,7 +27,7 @@ export const PersonForm = ({ setNewName, setNewNumber, setPersons, newName, newN
           };
           personApiService.updatePerson(existingPerson.id, newPerson)
             .then(() => {
-              personApiService.getAllPersons().then(res => setPersons(res.data))
+              personApiService.getAllPersons().then(res => setPersons(res));
             })
             .catch(() => {
               setMsg({error: `Information of ${existingPerson.name} has already been removed from server`})

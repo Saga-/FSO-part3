@@ -74,6 +74,17 @@ app.post('/api/persons', (request, response) => {
     .then(savedPerson => response.json(savedPerson));
 });
 
+app.put('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id)
+    .then(person => {
+      person.number = request.body.number
+      person.save()
+        .then(updatedPerson => response.json(updatedPerson))
+        .catch(e => next(e));
+    })
+    .catch(e => next(e));
+})
+
 app.get('/info', (request, response) => {
   Person.find({})
     .then(result => response.send(`

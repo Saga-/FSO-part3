@@ -37,17 +37,23 @@ app.get('/api/persons', (request, response) => {
 
 app.get('/api/persons/:id', (request, response) => {
   Person.findById(request.params.id)
-    .then(person => response.json(person));
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      response.status(400).send({ error: 'malformed id' })
+    })
 });
 
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find(person => person.id === id);
-  if (!person) {
-    return response.status(404).end();
-  }
-  persons = persons.filter(person => person.id !== id);
-  response.status(204).end();
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndRemove(request.params.id)
+    .then(result => response.status(204).end())
+    .catch(e => next(e));
 });
 
 app.post('/api/persons', (request, response) => {
@@ -69,12 +75,23 @@ app.post('/api/persons', (request, response) => {
 });
 
 app.get('/info', (request, response) => {
-  const size = persons.length;
-  response.send(`
-    <p>Phonebook has info for ${size} people</p>
-    <p>${Date()}</p>
-  `)
+  Person.find({})
+    .then(result => response.send(`
+        <p>Phonebook has info for ${result.length || 0} people</p>
+        <p>${Date()}</p>
+`));
 })
 
+// From https://fullstackopen.com/en/part3/saving_data_to_mongo_db#error-handling
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+  next(error);
+}
+
+app.use(errorHandler);
 
 

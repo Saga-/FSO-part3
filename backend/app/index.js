@@ -1,6 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+
+const Person = require('./models/person');
 
 const app = express();
 
@@ -18,47 +21,23 @@ app.use(morgan((tokens, req, res) => {
   ].join(' ');
 }))
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 })
-
-let persons =
-  [
-    {
-      "id": 1,
-      "name": "Arto Hellas",
-      "number": "040-123456"
-    },
-    {
-      "id": 2,
-      "name": "Ada Lovelace",
-      "number": "39-44-5323523"
-    },
-    {
-      "id": 3,
-      "name": "Dan Abramov",
-      "number": "12-43-234345"
-    },
-    {
-      "id": 4,
-      "name": "Mary Poppendieck",
-      "number": "39-23-6423122"
-    }
-];
 
 app.get('/', (request, response) => {
   response.send(`<p>Please navigate to /api/persons for content</p>`);
 });
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  Person.find({})
+    .then(people => response.json(people));
 });
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find(person => person.id === id);
-  person ? response.json(person) : response.status(404).send('Person not found');
+  Person.findById(request.params.id)
+    .then(person => response.json(person));
 });
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -81,18 +60,12 @@ app.post('/api/persons', (request, response) => {
   if (!body.number) {
     handleError('number missing in request');
   }
-  if (persons.find(person => person.name === body.name)) {
-    handleError('name must be unique');
-  }
-
-  const id = Math.floor((Math.random() * 5000) + 1);
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id
-  }
-  persons = persons.concat(person);
-  response.json(person);
+  })
+  person.save()
+    .then(savedPerson => response.json(savedPerson));
 });
 
 app.get('/info', (request, response) => {
@@ -103,6 +76,5 @@ app.get('/info', (request, response) => {
   `)
 })
 
-//mongodb+srv://test123:<password>@cluster0.v26on.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
 
 

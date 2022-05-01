@@ -27,7 +27,7 @@ app.listen(PORT, () => {
 })
 
 app.get('/', (request, response) => {
-  response.send(`<p>Please navigate to /api/persons for content</p>`);
+  response.send('<p>Please navigate to /api/persons for content</p>');
 });
 
 app.get('/api/persons', (request, response) => {
@@ -52,7 +52,7 @@ app.get('/api/persons/:id', (request, response) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then(result => response.status(204).end())
+    .then(() => response.status(204).end())
     .catch(e => next(e));
 });
 
@@ -99,14 +99,14 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 
   switch(error.name) {
-    case 'CastError':
-      return response.status(400).send({ error: 'malformed id' })
-    case 'ValidationError':
-      return response.status(400).json({ error: error.message })
-    case 'MongoServerError':
-      if (error.message.includes('duplicate key')) {
-        return response.status(400).json({error: 'Name already exists'})
-      }
+  case 'CastError':
+    return response.status(400).send({ error: 'malformed id' })
+  case 'ValidationError':
+    return response.status(400).json({ error: error.message })
+  case 'MongoServerError':
+    if (error.message.includes('duplicate key')) {
+      return response.status(400).json({ error: 'Name already exists' })
+    }
   }
 
   next(error);

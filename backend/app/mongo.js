@@ -13,7 +13,10 @@ const url = `mongodb+srv://test123:${password}@cluster0.v26on.mongodb.net/Phoneb
 mongoose.connect(url);
 
 const personSchema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    minLength: 3
+  },
   number: String
 });
 

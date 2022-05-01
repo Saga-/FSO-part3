@@ -11,7 +11,6 @@ export const PersonForm = ({ setNewName, setNewNumber, setPersons, newName, newN
 
 
   const handleFormSubmit = (e) => {
-    debugger;
     e.preventDefault();
     const existingPersonArr = persons.filter(person => person.name === newName);
     if (existingPersonArr.length) {
@@ -44,7 +43,7 @@ export const PersonForm = ({ setNewName, setNewNumber, setPersons, newName, newN
       };
       personApiService.addNewPerson(newPerson)
         .then(() => {
-          setMsg({success: `Added ${newPerson.name}`});
+          setMsg({ success: `Added ${newPerson.name}` });
           setTimeout(() => {
             setMsg(null);
           }, 5000)
@@ -52,7 +51,12 @@ export const PersonForm = ({ setNewName, setNewNumber, setPersons, newName, newN
           setNewName('');
           setNewNumber('');
         })
-        .catch(() => alert('Error: Person not saved'))
+        .catch((e) => {
+          setMsg({error: e.response.data.error });
+          setTimeout(() => {
+            setMsg(null);
+          }, 5000)
+        })
     }
   }
 

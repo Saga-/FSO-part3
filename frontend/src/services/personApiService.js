@@ -9,7 +9,7 @@ const getAllPersons = () => {
 
 const addNewPerson = (newPerson) => {
   const request = axios.post(baseUrl, newPerson);
-  return request.then(res => res.data).catch(e => e);
+  return request.then(res => res.data);
 }
 
 const deletePerson = id => {
@@ -18,7 +18,6 @@ const deletePerson = id => {
 }
 
 const updatePerson = (id, data) => {
-  debugger;
   const request = axios.put(`${baseUrl}/${id}`, data);
   return request.then(res => res.data);
 }

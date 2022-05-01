@@ -72,7 +72,7 @@ app.post('/api/persons', (request, response, next) => {
   })
   person.save()
     .then(savedPerson => response.json(savedPerson))
-    .catch(e => next(e));
+    .catch(e => next(e))
 });
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -103,7 +103,12 @@ const errorHandler = (error, request, response, next) => {
       return response.status(400).send({ error: 'malformed id' })
     case 'ValidationError':
       return response.status(400).json({ error: error.message })
+    case 'MongoServerError':
+      if (error.message.includes('duplicate key')) {
+        return response.status(400).json({error: 'Name already exists'})
+      }
   }
+
   next(error);
 }
 
